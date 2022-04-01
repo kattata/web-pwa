@@ -3,6 +3,7 @@ const network = document.querySelector("#network-status");
 const text = document.querySelector("#text-content");
 const readBtn = document.querySelector("#speak");
 const copyBtn = document.querySelector("#copy-to-clipboard");
+const shareBtn = document.querySelector("#share");
 
 let latitude;
 let longitude;
@@ -65,8 +66,24 @@ function readText() {
 copyBtn.addEventListener("click", () => copyToClipboard());
 
 function copyToClipboard() {
-  console.log("copy");
-  navigator.clipboard
-    .writeText(text.value)
-    .then(() => copyBtn.classList.add("text-black"));
+  navigator.clipboard.writeText(text.value).then(() => {
+    copyBtn.classList.add("text-amber-700");
+    setTimeout(() => {
+      copyBtn.classList.remove("text-amber-700");
+    }, 1000);
+  });
+}
+
+shareBtn.addEventListener("click", () => shareText());
+
+async function shareText() {
+  try {
+    const data = {
+      text: text.value,
+      title: "Your message",
+    };
+    await navigator.share(data);
+  } catch (err) {
+    console.log(err);
+  }
 }
