@@ -1,4 +1,9 @@
 const geolocation = document.querySelector("#geolocation");
+const network = document.querySelector("#network-status");
+const text = document.querySelector("#text-content");
+const readBtn = document.querySelector("#speak");
+const copyBtn = document.querySelector("#copy-to-clipboard");
+
 let latitude;
 let longitude;
 
@@ -21,8 +26,47 @@ async function getLocation() {
     const response = await fetch(url);
     const data = await response.json();
     geolocation.innerHTML = await data.locality;
+    getNetworkStatus();
   } catch (error) {
     console.log(error);
     geolocation.innerHTML = "Not found.";
   }
+}
+
+function getNetworkStatus() {
+  if (navigator.onLine) {
+    network.innerHTML = "Online";
+  } else {
+    network.innerHTML = "Offline";
+  }
+}
+
+window.addEventListener("online", function (e) {
+  network.innerHTML = "Online";
+});
+window.addEventListener("offline", () => {
+  network.innerHTML = "Offline";
+});
+
+readBtn.addEventListener("click", () => readText());
+
+function readText() {
+  if ("speechSynthesis" in window) {
+    // Speech Synthesis supported 🎉
+    var msg = new SpeechSynthesisUtterance();
+    msg.text = text.value;
+    window.speechSynthesis.speak(msg);
+  } else {
+    // Speech Synthesis Not Supported 😣
+    alert("Sorry, your browser doesn't support text to speech!");
+  }
+}
+
+copyBtn.addEventListener("click", () => copyToClipboard());
+
+function copyToClipboard() {
+  console.log("copy");
+  navigator.clipboard
+    .writeText(text.value)
+    .then(() => copyBtn.classList.add("text-black"));
 }
